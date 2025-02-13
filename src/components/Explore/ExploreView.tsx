@@ -15,7 +15,8 @@ import { UserContext } from "../../types";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { MessageStore } from "../../store/messageStore";
 import { useStoreState } from "pullstate";
-
+const VITE_ENV = import.meta.env.VITE_ENV;
+import { Backend_Link } from "../../../BackendLink";
 interface Message {
   type: "user" | "ai";
   content?: string;
@@ -256,7 +257,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
         // Step 1: Send a POST request to initiate the stream
         const initResponse = await fetch(
-          "http://localhost:5000/api/v1/ai/initStream",
+          `${Backend_Link[VITE_ENV as "LOCAL" | "PRODUCTION"]}/initStream`,
           {
             method: "POST",
             headers: {
@@ -274,7 +275,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
         // Step 2: Connect to the SSE stream using the stream ID
         const eventSource = new EventSourcePolyfill(
-          `http://localhost:5000/api/v1/ai/streamExploreContent?streamId=${streamId}`,
+          `${
+            Backend_Link[VITE_ENV as "LOCAL" | "PRODUCTION"]
+          }/streamExploreContent?streamId=${streamId}`,
           {
             headers: {
               "Content-Type": "application/json",

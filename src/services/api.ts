@@ -1,6 +1,8 @@
 // src/services/api.ts
 import { Question, UserContext, ExploreResponse } from "../types";
 import { Backend_Link } from "../../BackendLink";
+const VITE_ENV = import.meta.env.VITE_ENV;
+
 const transformQuestion = (rawQuestion: Question): Question => ({
   text: rawQuestion.text,
   options: rawQuestion.options,
@@ -21,7 +23,9 @@ export const api = {
   ): Promise<Question> {
     try {
       const question = await fetch(
-        `${Backend_Link.LOCAL}/getPlaygroundQuestion`,
+        `${
+          Backend_Link[VITE_ENV as "LOCAL" | "PRODUCTION"]
+        }/getPlaygroundQuestion`,
         {
           method: "POST",
           headers: {
@@ -46,13 +50,16 @@ export const api = {
     try {
       console.log("API generateTest called with:", { topic, examType });
 
-      const questions = await fetch(`${Backend_Link.LOCAL}/getTestQuestions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ topic, examType }),
-      });
+      const questions = await fetch(
+        `${Backend_Link[VITE_ENV as "LOCAL" | "PRODUCTION"]}/getTestQuestions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ topic, examType }),
+        }
+      );
 
       console.log("API received questions:", questions);
 
@@ -69,13 +76,16 @@ export const api = {
     userContext: UserContext
   ): Promise<ExploreResponse> {
     try {
-      const response = await await fetch(`${Backend_Link.LOCAL}/initStream`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query, age: userContext.age }),
-      });
+      const response = await fetch(
+        `${Backend_Link[VITE_ENV as "LOCAL" | "PRODUCTION"]}/initStream`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ query, age: userContext.age }),
+        }
+      );
 
       const returnedResponse = await response.json();
       return returnedResponse;
