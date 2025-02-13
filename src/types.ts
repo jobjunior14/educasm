@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface UserContext {
   age: number;
 }
@@ -43,4 +44,4 @@ declare global {
   interface Window {
     dataLayer: any[];
   }
-} 
+}

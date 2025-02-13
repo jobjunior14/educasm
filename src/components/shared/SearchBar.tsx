@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/shared/SearchBar.tsx
 import React, { useState, KeyboardEvent, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion"; // You'll need to install framer-motion
@@ -221,9 +222,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           transition={{ delay: 0.3 }}
           className="mt-6 space-y-2"
         >
-         <p className="text-gray-400 text-sm"></p>
+          <p className="text-gray-400 text-sm"></p>
           <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
-           <span></span>  
+            <span></span>
             {suggestions.map(({ text, icon }, idx) => (
               <motion.button
                 key={idx}

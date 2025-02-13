@@ -9,6 +9,8 @@ interface HomeViewProps {
   ) => void;
 }
 
+type mode = "explore" | "playground" | "test";
+
 export const HomeView = ({ onModeSelect }: HomeViewProps) => {
   const modes = [
     {
@@ -51,7 +53,7 @@ export const HomeView = ({ onModeSelect }: HomeViewProps) => {
                 <p className="text-gray-400 mb-4">{mode.description}</p>
                 <SearchBar
                   placeholder={mode.placeholder}
-                  onSearch={(query) => onModeSelect(mode.action as any, query)}
+                  onSearch={(query) => onModeSelect(mode.action as mode, query)}
                 />
               </div>
             </div>

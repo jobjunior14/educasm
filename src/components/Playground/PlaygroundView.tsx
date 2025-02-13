@@ -3,7 +3,17 @@ import React, { useState, useEffect } from "react";
 import { SearchBar } from "../shared/SearchBar";
 import { Loading } from "../shared/Loading";
 import { useApi } from "../../hooks/useApi";
-import { Trophy, Timer, Target, Award, Pause, Play, CheckCircle, XCircle, Lightbulb } from "lucide-react";
+import {
+  Trophy,
+  Timer,
+  Target,
+  Award,
+  Pause,
+  Play,
+  CheckCircle,
+  XCircle,
+  Lightbulb,
+} from "lucide-react";
 import { Question, UserContext } from "../../types";
 
 interface PlaygroundViewProps {
@@ -33,7 +43,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   initialQuery,
   onError,
   onSuccess,
-  userContext
+  userContext,
 }) => {
   const { getQuestion } = useApi();
   const [isInitialLoading, setIsInitialLoading] = useState(false);
@@ -67,7 +77,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     avgTime: 0,
   });
 
-  const [_topicProgress, _setTopicProgress] = useState<TopicProgress>(() => {
+  const [_topicProgress] = useState<TopicProgress>(() => {
     const saved = localStorage.getItem(`topic-progress-${query}`);
     return saved
       ? JSON.parse(saved)
@@ -81,7 +91,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   });
 
   const [nextQuestion, setNextQuestion] = useState<Question | null>(null);
-  const [preloadedQuestion, setPreloadedQuestion] = useState<Question | null>(null);
+  const [preloadedQuestion, setPreloadedQuestion] = useState<Question | null>(
+    null
+  );
 
   // Add state for tracking when to show next question
   const [shouldShowNext, setShouldShowNext] = useState(false);
@@ -91,7 +103,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     if (timerInterval) {
       clearInterval(timerInterval);
     }
-    
+
     const interval = setInterval(() => {
       setCurrentQuestionTime((prev) => prev + 1);
     }, 1000);
@@ -126,9 +138,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
 
     try {
-      console.log('Fetching next question...'); // Debug log
+      console.log("Fetching next question..."); // Debug log
       const question = await getQuestion(query, 1, userContext);
-      console.log('Question loaded:', question); // Debug log
+      console.log("Question loaded:", question); // Debug log
       setPreloadedQuestion(question);
     } catch (error) {
       console.error("Error fetching question:", error);
@@ -188,15 +200,17 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   const updateStats = (isCorrect: boolean): void => {
     setStats((prev) => {
       const newQuestions = prev.questions + 1;
-      const newAccuracy = (prev.accuracy * prev.questions + (isCorrect ? 100 : 0)) / newQuestions;
+      const newAccuracy =
+        (prev.accuracy * prev.questions + (isCorrect ? 100 : 0)) / newQuestions;
       const newStreak = isCorrect ? prev.streak + 1 : 0;
-      
+
       return {
         questions: newQuestions,
         accuracy: newAccuracy,
         streak: newStreak,
         bestStreak: Math.max(prev.bestStreak, newStreak),
-        avgTime: (prev.avgTime * prev.questions + currentQuestionTime) / newQuestions,
+        avgTime:
+          (prev.avgTime * prev.questions + currentQuestionTime) / newQuestions,
       };
     });
   };
@@ -219,12 +233,12 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
 
   const handleAnswer = (index: number) => {
     if (selectedAnswer !== null || !currentQuestion) return;
-    
+
     setSelectedAnswer(index);
     setShowExplanation(true);
     stopQuestionTimer();
     updateStats(index === currentQuestion.correctAnswer);
-    
+
     if (!isPaused) {
       // Start loading next question immediately
       fetchNewQuestion();
@@ -247,7 +261,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
 
   useEffect(() => {
     if (_topicProgress) {
-      console.log('Topic progress updated:', _topicProgress);
+      console.log("Topic progress updated:", _topicProgress);
     }
   }, [_topicProgress]);
 
@@ -260,7 +274,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   // Use useEffect to handle question transitions
   useEffect(() => {
     if (shouldShowNext && preloadedQuestion) {
-      console.log('Transitioning to next question:', preloadedQuestion);
+      console.log("Transitioning to next question:", preloadedQuestion);
       setCurrentQuestion(preloadedQuestion);
       setPreloadedQuestion(null);
       setShouldShowNext(false);
@@ -268,9 +282,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
       setShowExplanation(false);
       setCurrentQuestionTime(0); // Reset timer
       startQuestionTimer(); // Start timer for new question
-      setSessionStats(prev => ({
+      setSessionStats((prev) => ({
         ...prev,
-        totalQuestions: prev.totalQuestions + 1
+        totalQuestions: prev.totalQuestions + 1,
       }));
     }
   }, [shouldShowNext, preloadedQuestion]);
@@ -282,7 +296,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
         clearInterval(timerInterval);
       }
     };
-  }, []);
+  }, [timerInterval]);
 
   const formatAccuracy = (accuracy: number): number => {
     return Math.round(accuracy);
@@ -303,7 +317,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-center mb-4">
             What do you want to practice?
           </h1>
-          
+
           <div className="w-full max-w-xl mx-auto">
             <SearchBar
               onSearch={handleSearch}
@@ -311,11 +325,11 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
               centered={true}
               className="bg-gray-900/80"
             />
-            
+
             <p className="text-sm text-gray-400 text-center mt-1">
               Press Enter to search
             </p>
-            
+
             <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
               <span className="text-sm text-gray-400">Try:</span>
               <button
@@ -388,8 +402,10 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
 
           <div className="card flex-1 flex flex-col mt-4">
             <div className="flex justify-between items-start">
-              <h2 className="text-xs sm:text-base font-medium leading-relaxed 
-                text-gray-200 max-w-3xl whitespace-pre-line tracking-wide">
+              <h2
+                className="text-xs sm:text-base font-medium leading-relaxed 
+                text-gray-200 max-w-3xl whitespace-pre-line tracking-wide"
+              >
                 {currentQuestion?.text}
               </h2>
               <button
@@ -437,7 +453,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
                       <div
                         className="absolute inset-y-0 left-0 bg-primary transition-all duration-100"
                         style={{
-                          width: `${(nextQuestionCountdown / COUNTDOWN_DURATION) * 100}%`,
+                          width: `${
+                            (nextQuestionCountdown / COUNTDOWN_DURATION) * 100
+                          }%`,
                         }}
                       />
                     </div>
@@ -447,17 +465,21 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
                   </div>
                 )}
 
-                <div className={`px-3 py-2 rounded-lg ${
-                  selectedAnswer === currentQuestion.correctAnswer
-                    ? "bg-green-500/20 text-green-500"
-                    : "bg-red-500/20 text-red-500"
-                }`}>
+                <div
+                  className={`px-3 py-2 rounded-lg ${
+                    selectedAnswer === currentQuestion.correctAnswer
+                      ? "bg-green-500/20 text-green-500"
+                      : "bg-red-500/20 text-red-500"
+                  }`}
+                >
                   <div className="flex items-start gap-2">
-                    <div className={`p-1 rounded-full ${
-                      selectedAnswer === currentQuestion.correctAnswer
-                        ? "bg-green-500/20"
-                        : "bg-red-500/20"
-                    }`}>
+                    <div
+                      className={`p-1 rounded-full ${
+                        selectedAnswer === currentQuestion.correctAnswer
+                          ? "bg-green-500/20"
+                          : "bg-red-500/20"
+                      }`}
+                    >
                       {selectedAnswer === currentQuestion.correctAnswer ? (
                         <CheckCircle className="w-4 h-4" />
                       ) : (
@@ -468,7 +490,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
                       <p className="font-medium">
                         {selectedAnswer === currentQuestion.correctAnswer
                           ? "Correct!"
-                          : `Incorrect. The right answer is ${String.fromCharCode(65 + currentQuestion.correctAnswer)}`}
+                          : `Incorrect. The right answer is ${String.fromCharCode(
+                              65 + currentQuestion.correctAnswer
+                            )}`}
                       </p>
                       <p className="text-xs mt-1 opacity-90">
                         {currentQuestion.explanation.correct}

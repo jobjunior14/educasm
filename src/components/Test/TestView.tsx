@@ -1,10 +1,10 @@
 // src/components/Test/TestView.tsx
-import { useState, useEffect } from 'react';
-import { SearchBar } from '../shared/SearchBar';
-import { Loading } from '../shared/Loading';
-import { useApi } from '../../hooks/useApi';
-import { Trophy, Clock, AlertCircle } from 'lucide-react';
-import { Question, UserContext } from '../../types';
+import { useState, useEffect } from "react";
+import { SearchBar } from "../shared/SearchBar";
+import { Loading } from "../shared/Loading";
+import { useApi } from "../../hooks/useApi";
+import { Trophy, Clock, AlertCircle } from "lucide-react";
+import { Question, UserContext } from "../../types";
 
 interface TestViewProps {
   onError: (message: string) => void;
@@ -18,165 +18,178 @@ interface IndexedQuestion extends Question {
 
 export const TestView: React.FC<TestViewProps> = ({
   onError,
-  onSuccess,
+  // onSuccess,
 }) => {
   const { isLoading, generateTest } = useApi();
-  const [mode, setMode] = useState<'selection' | 'test' | 'result'>('selection');
-  const [examType, setExamType] = useState<'JEE' | 'NEET' | null>(null);
-  const [topic, setTopic] = useState('');
+  const [mode, setMode] = useState<"selection" | "test" | "result">(
+    "selection"
+  );
+  const [examType, setExamType] = useState<"JEE" | "NEET" | null>(null);
+  const [topic, setTopic] = useState("");
   const [questions, setQuestions] = useState<IndexedQuestion[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<IndexedQuestion | null>(null);
+  const [currentQuestion, setCurrentQuestion] =
+    useState<IndexedQuestion | null>(null);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [testStarted, setTestStarted] = useState(false);
   const [startTime, setStartTime] = useState<number>(0);
-  const [timeSpent, setTimeSpent] = useState('00:00');
+  const [timeSpent, setTimeSpent] = useState("00:00");
 
   // Forward-counting timer
   useEffect(() => {
-    if (mode === 'test' && testStarted) {
+    if (mode === "test" && testStarted) {
       const timer = setInterval(() => {
         const seconds = Math.floor((Date.now() - startTime) / 1000);
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         setTimeSpent(
-          `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+          `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+            .toString()
+            .padStart(2, "0")}`
         );
       }, 1000);
       return () => clearInterval(timer);
     }
   }, [mode, startTime, testStarted]);
 
-  const calculateRank = (marks: number, examType: 'JEE' | 'NEET'): string => {
+  const calculateRank = (marks: number, examType: "JEE" | "NEET"): string => {
     const maxMarks = questions.length * 4; // 80 marks total (20 questions × 4 marks)
     const percentage = (marks / maxMarks) * 100;
 
-    if (examType === 'JEE') {
+    if (examType === "JEE") {
       // JEE Mains mapping (converting our 80 marks scale to 300 marks scale)
-      if (percentage >= 97) return '12-19';       // ~290/300
-      if (percentage >= 95) return '20-50';       // ~285/300
-      if (percentage >= 93) return '51-100';      // ~280/300
-      if (percentage >= 90) return '101-200';     // ~270/300
-      if (percentage >= 87) return '201-500';     // ~260/300
-      if (percentage >= 83) return '501-1,000';   // ~250/300
-      if (percentage >= 80) return '1,001-2,000'; // ~240/300
-      if (percentage >= 77) return '2,001-3,500'; // ~230/300
-      if (percentage >= 73) return '3,501-5,000'; // ~220/300
-      if (percentage >= 70) return '5,001-7,000'; // ~210/300
-      if (percentage >= 67) return '7,001-10,000'; // ~200/300
-      if (percentage >= 63) return '10,001-15,000'; // ~190/300
-      if (percentage >= 60) return '15,001-20,000'; // ~180/300
-      if (percentage >= 57) return '20,001-25,000'; // ~170/300
-      if (percentage >= 53) return '25,001-30,000'; // ~160/300
-      if (percentage >= 50) return '30,001-40,000'; // ~150/300
-      if (percentage >= 47) return '40,001-50,000'; // ~140/300
-      if (percentage >= 43) return '50,001-60,000'; // ~130/300
-      if (percentage >= 40) return '60,001-70,000'; // ~120/300
-      if (percentage >= 37) return '70,001-80,000'; // ~110/300
-      if (percentage >= 33) return '80,001-90,000'; // ~100/300
-      if (percentage >= 30) return '90,001-100,000'; // ~90/300
-      return '100,000+';
-
+      if (percentage >= 97) return "12-19"; // ~290/300
+      if (percentage >= 95) return "20-50"; // ~285/300
+      if (percentage >= 93) return "51-100"; // ~280/300
+      if (percentage >= 90) return "101-200"; // ~270/300
+      if (percentage >= 87) return "201-500"; // ~260/300
+      if (percentage >= 83) return "501-1,000"; // ~250/300
+      if (percentage >= 80) return "1,001-2,000"; // ~240/300
+      if (percentage >= 77) return "2,001-3,500"; // ~230/300
+      if (percentage >= 73) return "3,501-5,000"; // ~220/300
+      if (percentage >= 70) return "5,001-7,000"; // ~210/300
+      if (percentage >= 67) return "7,001-10,000"; // ~200/300
+      if (percentage >= 63) return "10,001-15,000"; // ~190/300
+      if (percentage >= 60) return "15,001-20,000"; // ~180/300
+      if (percentage >= 57) return "20,001-25,000"; // ~170/300
+      if (percentage >= 53) return "25,001-30,000"; // ~160/300
+      if (percentage >= 50) return "30,001-40,000"; // ~150/300
+      if (percentage >= 47) return "40,001-50,000"; // ~140/300
+      if (percentage >= 43) return "50,001-60,000"; // ~130/300
+      if (percentage >= 40) return "60,001-70,000"; // ~120/300
+      if (percentage >= 37) return "70,001-80,000"; // ~110/300
+      if (percentage >= 33) return "80,001-90,000"; // ~100/300
+      if (percentage >= 30) return "90,001-100,000"; // ~90/300
+      return "100,000+";
     } else {
       // NEET mapping (converting our 80 marks scale to 720 marks scale)
-      if (percentage >= 99) return '1';
-      if (percentage >= 97) return '2-19';        // ~715/720
-      if (percentage >= 95) return '20-50';       // ~710/720
-      if (percentage >= 93) return '51-100';      // ~705/720
-      if (percentage >= 90) return '101-200';     // ~700/720
-      if (percentage >= 87) return '201-500';     // ~690/720
-      if (percentage >= 85) return '501-1,000';   // ~680/720
-      if (percentage >= 83) return '1,001-2,000'; // ~670/720
-      if (percentage >= 80) return '2,001-3,000'; // ~660/720
-      if (percentage >= 77) return '3,001-5,000'; // ~650/720
-      if (percentage >= 75) return '5,001-7,000'; // ~640/720
-      if (percentage >= 73) return '7,001-10,000'; // ~630/720
-      if (percentage >= 70) return '10,001-15,000'; // ~620/720
-      if (percentage >= 67) return '15,001-20,000'; // ~610/720
-      if (percentage >= 65) return '20,001-25,000'; // ~600/720
-      if (percentage >= 63) return '25,001-30,000'; // ~590/720
-      if (percentage >= 60) return '30,001-35,000'; // ~580/720
-      if (percentage >= 57) return '35,001-40,000'; // ~570/720
-      if (percentage >= 55) return '40,001-45,000'; // ~560/720
-      if (percentage >= 53) return '45,001-50,000'; // ~550/720
-      if (percentage >= 50) return '50,001-60,000'; // ~540/720
-      if (percentage >= 47) return '60,001-70,000'; // ~530/720
-      if (percentage >= 45) return '70,001-80,000'; // ~520/720
-      if (percentage >= 43) return '80,001-90,000'; // ~510/720
-      if (percentage >= 40) return '90,001-100,000'; // ~500/720
-      return '100,000+';
+      if (percentage >= 99) return "1";
+      if (percentage >= 97) return "2-19"; // ~715/720
+      if (percentage >= 95) return "20-50"; // ~710/720
+      if (percentage >= 93) return "51-100"; // ~705/720
+      if (percentage >= 90) return "101-200"; // ~700/720
+      if (percentage >= 87) return "201-500"; // ~690/720
+      if (percentage >= 85) return "501-1,000"; // ~680/720
+      if (percentage >= 83) return "1,001-2,000"; // ~670/720
+      if (percentage >= 80) return "2,001-3,000"; // ~660/720
+      if (percentage >= 77) return "3,001-5,000"; // ~650/720
+      if (percentage >= 75) return "5,001-7,000"; // ~640/720
+      if (percentage >= 73) return "7,001-10,000"; // ~630/720
+      if (percentage >= 70) return "10,001-15,000"; // ~620/720
+      if (percentage >= 67) return "15,001-20,000"; // ~610/720
+      if (percentage >= 65) return "20,001-25,000"; // ~600/720
+      if (percentage >= 63) return "25,001-30,000"; // ~590/720
+      if (percentage >= 60) return "30,001-35,000"; // ~580/720
+      if (percentage >= 57) return "35,001-40,000"; // ~570/720
+      if (percentage >= 55) return "40,001-45,000"; // ~560/720
+      if (percentage >= 53) return "45,001-50,000"; // ~550/720
+      if (percentage >= 50) return "50,001-60,000"; // ~540/720
+      if (percentage >= 47) return "60,001-70,000"; // ~530/720
+      if (percentage >= 45) return "70,001-80,000"; // ~520/720
+      if (percentage >= 43) return "80,001-90,000"; // ~510/720
+      if (percentage >= 40) return "90,001-100,000"; // ~500/720
+      return "100,000+";
     }
   };
 
   const startTest = async () => {
     if (!examType || !topic) {
-      onError('Please select an exam type and topic');
+      onError("Please select an exam type and topic");
       return;
     }
 
     try {
-      console.log('Starting test with:', { topic, examType });
-      setMode('test');
+      console.log("Starting test with:", { topic, examType });
+      setMode("test");
       const generatedQuestions = await generateTest(topic, examType);
-      console.log('Generated questions:', generatedQuestions);
-      
-      if (!Array.isArray(generatedQuestions) || generatedQuestions.length !== 20) {
-        throw new Error(`Expected 20 questions, got ${generatedQuestions.length}`);
+      console.log("Generated questions:", generatedQuestions);
+
+      if (
+        !Array.isArray(generatedQuestions) ||
+        generatedQuestions.length !== 20
+      ) {
+        throw new Error(
+          `Expected 20 questions, got ${generatedQuestions.length}`
+        );
       }
 
       const questionsWithIndex = generatedQuestions.map((q, idx) => ({
         ...q,
-        index: idx
+        index: idx,
       }));
-      
+
       setQuestions(questionsWithIndex);
       setCurrentQuestion(questionsWithIndex[0]);
-      setAnswers(Object.fromEntries(questionsWithIndex.map(q => [q.index, -1]))); // Initialize all answers as -1 (unanswered)
+      setAnswers(
+        Object.fromEntries(questionsWithIndex.map((q) => [q.index, -1]))
+      ); // Initialize all answers as -1 (unanswered)
       setTestStarted(true);
       setStartTime(Date.now());
     } catch (error) {
-      console.error('Test generation error:', error);
-      onError('Failed to generate test questions. Please try again.');
-      setMode('selection');
+      console.error("Test generation error:", error);
+      onError("Failed to generate test questions. Please try again.");
+      setMode("selection");
     }
   };
 
   // Add effect to start timer when first question is viewed
   useEffect(() => {
-    if (mode === 'test' && !testStarted && questions.length > 0) {
+    if (mode === "test" && !testStarted && questions.length > 0) {
       setStartTime(Date.now());
       setTestStarted(true);
     }
   }, [mode, questions, testStarted]);
 
-  const submitTest = () => {
-    let totalMarks = 0;
-    Object.values(answers).forEach((answer) => {
-      if (answer === -1) return; // Skip unanswered
-      if (answer === questions[answer].correctAnswer) {
-        totalMarks += 4; // +4 for correct
-      } else {
-        totalMarks -= 1; // -1 for wrong
-      }
-    });
+  // const submitTest = () => {
+  //   let totalMarks = 0;
+  //   Object.values(answers).forEach((answer) => {
+  //     if (answer === -1) return; // Skip unanswered
+  //     if (answer === questions[answer].correctAnswer) {
+  //       totalMarks += 4; // +4 for correct
+  //     } else {
+  //       totalMarks -= 1; // -1 for wrong
+  //     }
+  //   });
 
-    setMode('result');
-    onSuccess('Test completed! Check your results.');
-  };
+  //   setMode('result');
+  //   onSuccess('Test completed! Check your results.');
+  // };
 
   // Selection View - Exam Type and Topic Selection
+
   const renderSelectionView = () => (
     <div className="space-y-8 animate-fade-in">
       <div className="card">
         <h2 className="text-xl font-semibold mb-4">Select Exam Type</h2>
         <div className="grid grid-cols-2 gap-4">
-          {['JEE Mains', 'NEET'].map((type) => (
+          {["JEE Mains", "NEET"].map((type) => (
             <button
               key={type}
-              onClick={() => setExamType(type === 'JEE Mains' ? 'JEE' : 'NEET')}
+              onClick={() => setExamType(type === "JEE Mains" ? "JEE" : "NEET")}
               className={`p-4 rounded-lg border-2 transition-colors ${
-                (examType === 'JEE' && type === 'JEE Mains') || (examType === 'NEET' && type === 'NEET')
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-gray-700 hover:border-primary/50'
+                (examType === "JEE" && type === "JEE Mains") ||
+                (examType === "NEET" && type === "NEET")
+                  ? "border-primary bg-primary/10"
+                  : "border-gray-700 hover:border-primary/50"
               }`}
             >
               {type}
@@ -216,12 +229,17 @@ export const TestView: React.FC<TestViewProps> = ({
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-4">
             <span className="text-lg font-medium">
-              Question {currentQuestion ? (currentQuestion.index + 1) : ''}/20
+              Question {currentQuestion ? currentQuestion.index + 1 : ""}/20
             </span>
             <div className="h-2 w-32 bg-gray-700 rounded-full">
-              <div 
+              <div
                 className="h-2 bg-primary rounded-full transition-all duration-300"
-                style={{ width: `${((currentQuestion ? currentQuestion.index + 1 : 0) / 20) * 100}%` }}
+                style={{
+                  width: `${
+                    ((currentQuestion ? currentQuestion.index + 1 : 0) / 20) *
+                    100
+                  }%`,
+                }}
               />
             </div>
           </div>
@@ -233,21 +251,24 @@ export const TestView: React.FC<TestViewProps> = ({
 
         {/* Question Navigation Grid */}
         <div className="flex flex-wrap gap-2">
-          {Array(20).fill(0).map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentQuestion(questions[idx])}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 
-                ${currentQuestion === questions[idx]
-                  ? 'bg-primary text-white scale-110 shadow-lg'
-                  : answers[idx] !== -1
-                  ? 'bg-green-500/20 text-green-500 hover:bg-green-500/30'
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+          {Array(20)
+            .fill(0)
+            .map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentQuestion(questions[idx])}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 
+                ${
+                  currentQuestion === questions[idx]
+                    ? "bg-primary text-white scale-110 shadow-lg"
+                    : answers[idx] !== -1
+                    ? "bg-green-500/20 text-green-500 hover:bg-green-500/30"
+                    : "bg-gray-700 text-gray-400 hover:bg-gray-600"
                 }`}
-            >
-              {idx + 1}
-            </button>
-          ))}
+              >
+                {idx + 1}
+              </button>
+            ))}
         </div>
       </div>
 
@@ -256,7 +277,7 @@ export const TestView: React.FC<TestViewProps> = ({
         <h2 className="text-xl font-medium mb-6 leading-relaxed">
           {currentQuestion?.text}
         </h2>
-        
+
         <div className="flex flex-col space-y-4">
           {/* Question options */}
           {currentQuestion?.options.map((option, idx) => (
@@ -264,9 +285,9 @@ export const TestView: React.FC<TestViewProps> = ({
               key={idx}
               onClick={() => handleAnswer(idx)}
               className={`p-4 rounded-lg ${
-                answers[currentQuestion.index] === idx 
-                  ? 'bg-primary text-white' 
-                  : 'bg-gray-700 hover:bg-gray-600'
+                answers[currentQuestion.index] === idx
+                  ? "bg-primary text-white"
+                  : "bg-gray-700 hover:bg-gray-600"
               }`}
             >
               {option}
@@ -284,7 +305,10 @@ export const TestView: React.FC<TestViewProps> = ({
             </button>
             <button
               onClick={goToNext}
-              disabled={!currentQuestion || currentQuestion.index === questions.length - 1}
+              disabled={
+                !currentQuestion ||
+                currentQuestion.index === questions.length - 1
+              }
               className="px-4 py-2 rounded bg-primary hover:bg-primary-dark disabled:opacity-50"
             >
               Next
@@ -295,7 +319,8 @@ export const TestView: React.FC<TestViewProps> = ({
 
       {/* Answered Questions Count */}
       <div className="text-center text-sm text-gray-400">
-        {Object.values(answers).filter(a => a !== -1).length} of 20 questions answered
+        {Object.values(answers).filter((a) => a !== -1).length} of 20 questions
+        answered
       </div>
     </div>
   );
@@ -313,7 +338,9 @@ export const TestView: React.FC<TestViewProps> = ({
           <div className="card">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-3xl font-bold text-primary">{totalMarks}</span>
+                <span className="text-3xl font-bold text-primary">
+                  {totalMarks}
+                </span>
                 <span className="text-gray-400 text-sm ml-2">marks</span>
               </div>
               <Trophy className="w-8 h-8 text-primary" />
@@ -322,11 +349,13 @@ export const TestView: React.FC<TestViewProps> = ({
               Out of {questions.length * 4} marks
             </p>
           </div>
-          
+
           <div className="card">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-3xl font-bold text-purple-500">{timeSpent}</span>
+                <span className="text-3xl font-bold text-purple-500">
+                  {timeSpent}
+                </span>
                 <span className="text-gray-400 text-sm ml-2">duration</span>
               </div>
               <Clock className="w-8 h-8 text-purple-500" />
@@ -351,7 +380,7 @@ export const TestView: React.FC<TestViewProps> = ({
 
         <button
           onClick={() => {
-            setMode('selection');
+            setMode("selection");
             setAnswers({});
             setCurrentQuestion(null);
           }}
@@ -366,9 +395,9 @@ export const TestView: React.FC<TestViewProps> = ({
   // Add proper index handling
   const handleAnswer = (selectedIndex: number) => {
     if (!currentQuestion) return;
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [currentQuestion.index]: selectedIndex
+      [currentQuestion.index]: selectedIndex,
     }));
   };
 
@@ -411,16 +440,16 @@ export const TestView: React.FC<TestViewProps> = ({
         </div>
       </div>
 
-      {mode === 'selection' && renderSelectionView()}
-      {mode === 'test' && (
+      {mode === "selection" && renderSelectionView()}
+      {mode === "test" && (
         <>
           {renderTestView()}
-          <button onClick={submitTest} className="btn btn-primary mt-6 w-full">
+          {/* <button onClick={submitTest} className="btn btn-primary mt-6 w-full">
             Submit Test
-          </button>
+          </button> */}
         </>
       )}
-      {mode === 'result' && renderResultView()}
+      {mode === "result" && renderResultView()}
     </div>
   );
 };
