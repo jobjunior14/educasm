@@ -13,6 +13,8 @@ import { RelatedQuestions } from "./RelatedQuestions";
 import { LoadingAnimation } from "../shared/LoadingAnimation";
 import { UserContext } from "../../types";
 import { EventSourcePolyfill } from "event-source-polyfill";
+import { MessageStore } from "../../store/messageStore";
+import { useStoreState } from "pullstate";
 
 interface Message {
   type: "user" | "ai";
@@ -28,20 +30,6 @@ interface Message {
     context: string;
   }>;
 }
-
-// interface StreamChunk {
-//   text?: string;
-//   topics?: Array<{
-//     topic: string;
-//     type: string;
-//     reason: string;
-//   }>;
-//   questions?: Array<{
-//     question: string;
-//     type: string;
-//     context: string;
-//   }>;
-// }
 
 interface ExploreViewProps {
   initialQuery?: string;
@@ -202,11 +190,15 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onRelatedQueryClick,
   userContext,
 }) => {
+  const messagesCTX = useStoreState(MessageStore);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [showInitialSearch, setShowInitialSearch] = useState(!initialQuery);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log(messagesCTX);
 
   // Add a ref for the messages container
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -254,10 +246,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
         scrollToTop();
         setIsLoading(true);
-        setMessages([
-          { type: "user", content: query },
-          { type: "ai", content: "", topics: [], questions: [] },
-        ]);
+
+        // Add the user's query to the store
+        MessageStore.update((state) => {
+          state.push({ type: "user", content: query });
+        });
+
         setShowInitialSearch(false);
 
         // Step 1: Send a POST request to initiate the stream
@@ -300,15 +294,22 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           if (chunk.topics) aiResponse.topics = chunk.topics;
           if (chunk.questions) aiResponse.questions = chunk.questions;
 
-          setMessages([
-            { type: "user", content: query },
-            {
-              type: "ai",
-              content: aiResponse.text,
-              topics: aiResponse.topics,
-              questions: aiResponse.questions,
-            },
-          ]);
+          // Update the AI response in the store
+          MessageStore.update((state) => {
+            const lastMessage = state[state.length - 1];
+            if (lastMessage.type === "ai") {
+              lastMessage.content = aiResponse.text;
+              lastMessage.topics = aiResponse.topics;
+              lastMessage.questions = aiResponse.questions;
+            } else {
+              state.push({
+                type: "ai",
+                content: aiResponse.text,
+                topics: aiResponse.topics,
+                questions: aiResponse.questions,
+              });
+            }
+          });
         };
 
         eventSource.onerror = (e) => {
@@ -411,7 +412,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           className="relative flex flex-col w-full"
         >
           <div className="space-y-2 pb-16">
-            {messages.map((message, index) => (
+            {messagesCTX.map((message, index) => (
               <div key={index} className="px-2 sm:px-4 w-full mx-auto">
                 <div className="max-w-3xl mx-auto">
                   {message.type === "user" ? (
@@ -423,7 +424,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   ) : (
                     <div className="w-full">
                       <div className="flex-1 min-w-0">
-                        {!message.content && isLoading ? (
+                        {!message.content && !isLoading ? (
                           <div className="flex items-center space-x-2 py-2">
                             <LoadingAnimation />
                             <span className="text-sm text-gray-400">
